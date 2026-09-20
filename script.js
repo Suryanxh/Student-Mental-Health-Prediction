@@ -19,7 +19,10 @@
   const gaugeFill = document.getElementById("gauge-fill");
   const errorLabelEl = document.getElementById("error-label");
   const errorCopyEl = document.getElementById("error-copy");
+  const loadingCopyEl = document.querySelector(".loading-copy");
+  const resultPanel = document.querySelector(".result-panel");
 
+  const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const GAUGE_ARC_LENGTH = 314; // approx pi * r(100)
 
   // ---------------------------------------------------------
@@ -53,8 +56,9 @@
   const stressHiddenInput = document.getElementById("stress_level");
   segGroup.querySelectorAll(".seg-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
-      segGroup.querySelectorAll(".seg-btn").forEach((b) => b.classList.remove("active"));
+      segGroup.querySelectorAll(".seg-btn").forEach((b) => { b.classList.remove("active"); b.setAttribute("aria-checked", "false"); });
       btn.classList.add("active");
+      btn.setAttribute("aria-checked", "true");
       stressHiddenInput.value = btn.dataset.value;
       clearFieldError(stressHiddenInput);
     });
@@ -154,6 +158,10 @@
   function showState(name) {
     [stateIdle, stateLoading, stateResult, stateError].forEach((el) => (el.hidden = true));
     ({ idle: stateIdle, loading: stateLoading, result: stateResult, error: stateError }[name]).hidden = false;
+    // on stacked (mobile/tablet) layouts the result sits below the form, so bring it into view
+    if (name !== "idle" && window.matchMedia("(max-width: 920px)").matches) {
+      resultPanel.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "smooth", block: "center" });
+    }
   }
 
   function setSubmitting(isSubmitting) {
@@ -242,6 +250,10 @@
     }
 
     setSubmitting(true);
+    loadingCopyEl.textContent = "Running your habits through the model.";
+    const slowTimer = setTimeout(() => {
+      loadingCopyEl.textContent = "Still working — the server may be waking up, which can take up to a minute.";
+    }, 6000);
     showState("loading");
 
     try {
@@ -281,9 +293,10 @@
     } catch (err) {
       renderError(
         "Can't reach the server",
-        `Couldn't connect to ${API_BASE}. Make sure the backend is running (uvicorn main:app --port 2200 --reload) and reachable from this page.`
+        `We couldn't reach the prediction service. Check your connection and try again. If the server was idle, it may need up to a minute to wake up.`
       );
     } finally {
+      clearTimeout(slowTimer);
       setSubmitting(false);
     }
   });
@@ -301,4 +314,30 @@
   errorRetryBtn.addEventListener("click", () => {
     showState("idle");
   });
+
+  // ---------------------------------------------------------
+  // Page polish: reveal on scroll, nav scroll-spy, back-to-top
+  // ---------------------------------------------------------
+  const toTop = document.getElementById("to-top");
+  toTop.addEventListener("click", () => window.scrollTo({ top: 0, behavior: prefersReducedMotion ? "auto" : "smooth" }));
+  window.addEventListener("scroll", () => toTop.classList.toggle("show", window.scrollY > 600), { passive: true });
+
+  if ("IntersectionObserver" in window) {
+    const revealIO = new IntersectionObserver((entries, obs) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) { en.target.classList.add("in"); obs.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll(".reveal").forEach((el) => revealIO.observe(el));
+
+    const navLinks = document.querySelectorAll("[data-spy]");
+    const spyIO = new IntersectionObserver((entries) => {
+      entries.forEach((en) => {
+        if (en.isIntersecting) navLinks.forEach((a) => a.setAttribute("aria-current", String(a.dataset.spy === en.target.id)));
+      });
+    }, { rootMargin: "-40% 0px -50% 0px" });
+    navLinks.forEach((a) => { const t = document.getElementById(a.dataset.spy); if (t) spyIO.observe(t); });
+  } else {
+    document.querySelectorAll(".reveal").forEach((el) => el.classList.add("in"));
+  }
 })();

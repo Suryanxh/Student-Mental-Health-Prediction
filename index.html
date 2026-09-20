@@ -8,10 +8,22 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,500&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css" />
-</head>S
-<body>
+<script>document.documentElement.classList.add("js")</script>
+</head>
+<body id="top">
 
 <div class="noise-overlay" aria-hidden="true"></div>
+
+<a class="skip-link" href="#check-in">Skip to check-in</a>
+<nav class="site-nav" aria-label="Primary">
+  <div class="nav-inner">
+    <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>Signal</a>
+    <ul class="nav-links">
+      <li><a href="#check-in" data-spy="check-in" aria-current="true">Check-in</a></li>
+      <li><a href="#how-it-works" data-spy="how-it-works">How it works</a></li>
+    </ul>
+  </div>
+</nav>
 
 <header class="site-header">
   <div class="header-inner">
@@ -21,10 +33,11 @@
   </div>
 </header>
 
-<main class="layout">
+<main class="layout" id="check-in">
 
   <!-- FORM PANEL -->
   <section class="panel form-panel" aria-labelledby="form-heading">
+    <h2 id="form-heading" class="sr-only">Your daily check-in</h2>
     <form id="predict-form" novalidate>
 
       <fieldset class="group">
@@ -117,7 +130,7 @@
             <span class="error-msg" data-for="avg_daily_usage_hours"></span>
           </div>
           <div class="field">
-            <label for="daily_unlocks">Daily phone unlocks</label>
+            <span class="label-row"><label for="daily_unlocks">Daily phone unlocks</label><span class="tip" tabindex="0" role="img" aria-label="Roughly how many times you wake or unlock your phone in a day. Your phone's screen-time settings show this." data-tip="Roughly how many times you wake or unlock your phone in a day. Your phone's screen-time settings show this.">i</span></span>
             <input type="number" id="daily_unlocks" name="daily_unlocks" min="0" step="1" required placeholder="e.g. 60" />
             <span class="error-msg" data-for="daily_unlocks"></span>
           </div>
@@ -152,12 +165,12 @@
             <span class="error-msg" data-for="sleep_hours_per_night"></span>
           </div>
           <div class="field field-span">
-            <label for="stress_level">Perceived stress level</label>
-            <div class="segmented" id="stress_level_group" data-name="stress_level">
-              <button type="button" class="seg-btn" data-value="Low">Low</button>
-              <button type="button" class="seg-btn" data-value="Medium">Medium</button>
-              <button type="button" class="seg-btn" data-value="High">High</button>
-              <button type="button" class="seg-btn" data-value="Very High">Very High</button>
+            <span class="label-row"><label id="stress-label" for="stress_level">Perceived stress level</label><span class="tip" tabindex="0" role="img" aria-label="How stressed you have felt lately, in your own judgement. There is no wrong answer." data-tip="How stressed you have felt lately, in your own judgement. There is no wrong answer.">i</span></span>
+            <div class="segmented" id="stress_level_group" data-name="stress_level" role="radiogroup" aria-labelledby="stress-label">
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-value="Low">Low</button>
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-value="Medium">Medium</button>
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-value="High">High</button>
+              <button type="button" class="seg-btn" role="radio" aria-checked="false" data-value="Very High">Very High</button>
             </div>
             <input type="hidden" id="stress_level" name="stress_level" required />
             <span class="error-msg" data-for="stress_level"></span>
@@ -218,6 +231,7 @@
 
       <div class="state state-error" id="state-error" hidden>
         <div class="error-icon" aria-hidden="true">!</div>
+        <p class="error-label" id="error-label"></p>
         <p class="error-copy" id="error-copy"></p>
         <button type="button" class="reset-btn" id="error-retry-btn">Try again</button>
       </div>
@@ -227,9 +241,47 @@
 
 </main>
 
+<figure class="quote-band reveal">
+  <blockquote><p>Small habits, steadily kept, are how a steadier week gets built.</p></blockquote>
+  <figcaption>Habits, not verdicts</figcaption>
+</figure>
+
+<section class="section" id="how-it-works" aria-labelledby="how-heading">
+  <div class="section-head">
+    <h2 id="how-heading">From daily habits to a single read</h2>
+    <p>No account needed. Answer a few questions and get a model-based snapshot of your routine.</p>
+  </div>
+  <ol class="steps">
+    <li class="step-card reveal"><span class="step-num">1</span><h3>Share your rhythm</h3><p>Tell us about sleep, screen time, study, activity and stress.</p></li>
+    <li class="step-card reveal"><span class="step-num">2</span><h3>The model reads the pattern</h3><p>Your answers are sent to a trained model that estimates a wellness score.</p></li>
+    <li class="step-card reveal"><span class="step-num">3</span><h3>Get a score you can act on</h3><p>See a 0–10 signal with a short note on where small changes may help.</p></li>
+  </ol>
+</section>
+
 <footer class="site-footer">
-  <p>Built for informational purposes only — this is not a clinical assessment. If you're struggling, please talk to someone you trust.</p>
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a class="brand" href="#top"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-7 4 14 3-7h4"/></svg></span>Signal</a>
+      <p>A quick read on how habits, screen time, and stress are trending — modeled from your daily rhythm, not a diagnosis.</p>
+    </div>
+    <nav class="footer-col" aria-label="Quick links">
+      <h3>Quick links</h3>
+      <ul><li><a href="#check-in">Check-in</a></li><li><a href="#how-it-works">How it works</a></li><li><a href="#top">Back to top</a></li></ul>
+    </nav>
+    <nav class="footer-col" aria-label="Support resources">
+      <h3>Get support</h3>
+      <ul>
+        <li><a href="https://findahelpline.com" target="_blank" rel="noopener noreferrer">Find a helpline</a></li>
+        <li><a href="https://www.who.int/health-topics/mental-health" target="_blank" rel="noopener noreferrer">WHO: mental health</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="footer-bottom">
+    <p><span>© 2026 Mental Health Signal. Crafted by <strong>Suryansh</strong>.</span><span>Built for informational purposes only — this is not a clinical assessment. If you're struggling, please talk to someone you trust.</span></p>
+  </div>
 </footer>
+
+<button type="button" class="to-top" id="to-top" aria-label="Back to top"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
 
 <script src="script.js"></script>
 </body>
